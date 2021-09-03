@@ -1,2 +1,5 @@
+//主界面入口
+import { css } from 'linaria';
 import React from 'react';
-export default ()=>(<div>home page_route</div>)
+const wrapStyle = css`color:red`;
+export default ()=>(<div className={wrapStyle}>home page_route</div>)

@@ -9,33 +9,33 @@ const autoprefixer = require("autoprefixer");
 const postcssVars = require("postcss-simple-vars");
 const postcssImport = require("postcss-import");
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-module.exports={
-	entry:"./src/index.js",
+module.exports = {
+	entry: "./src/index.js",
 	output: {
-      path: path.resolve(__dirname, "build"),
-      filename: "[name].[hash].js",
-      chunkFilename: "chunks/[name].[hash].js",
+		path: path.resolve(__dirname, "build"),
+		filename: "[name].[hash].js",
+		chunkFilename: "chunks/[name].[hash].js",
 	},
 	devServer: {
-		open:true,
-		port: process.env.PORT || 8085,
-		historyApiFallback:true
+		open: true,
+		port: process.env.PORT || 8095,
+		historyApiFallback: true
 	},
-	resolve:{
-		alias:{
-			"@":path.resolve("src")
-		 },
-	},	
+	resolve: {
+		alias: {
+			"@": path.resolve("src")
+		},
+	},
 	plugins: [
 		new webpack.DefinePlugin({
-		  "process.env": {
-			NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-			baseUrl: devmode ? "'http://192.168.1.198:8016'" : "''",
-		  },
+			"process.env": {
+				NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+				baseUrl: devmode ? "'http://192.168.1.198:8016'" : "''",
+			},
 		}),
 		new HtmlWebpackPlugin({
-            template: './src/index.html', //指定模板路径
-            filename: 'index.html', //指定文件名
+			template: './src/index.html', //指定模板路径
+			filename: 'index.html', //指定文件名
 		}),
 		new MiniCssExtractPlugin({
 			filename: "static/css/[name].[hash].css",
@@ -44,34 +44,38 @@ module.exports={
 		new OptimizeCssAssetsPlugin(),
 		new webpack.LoaderOptionsPlugin({
 			options: {
-			  productionSourceMap:true
+				productionSourceMap: true
 			}
 		})
-    ],
+	],
 	module: {
 		rules: [
 			{
-				test: /\.jsx |.js$/, ///\.js$/,
+				test: /\.jsx|\.js$/, ///\.js$/,
 				exclude: /node_modules/,
-				use: {
+				use: [{
 					loader: "babel-loader",
-					query: {
-					plugins: [
-						"@babel/plugin-syntax-dynamic-import",
-						"@babel/plugin-transform-runtime",
-						"@babel/plugin-transform-async-to-generator",
-					],
-					presets: ["@babel/preset-env", "@babel/preset-react"],
-					compact: true,
+					options: {
+						plugins: [
+							"@babel/plugin-syntax-dynamic-import",
+							"@babel/plugin-transform-runtime",
+							"@babel/plugin-transform-async-to-generator",
+						],
+						compact: true,
 					},
 				},
+				{
+					loader: 'linaria/loader',
+					options: { sourceMap: devmode},
+				},
+				]
 			},
 			{
 				test: /\.html$/,
 				use: [
 					{
-					loader: "html-loader",
-					options: { minimize: true },
+						loader: "html-loader",
+						options: { minimize: true },
 					},
 				],
 			},
@@ -103,7 +107,7 @@ module.exports={
 					"style-loader",
 					{
 						loader: "css-loader",
-						options: {	
+						options: {
 							importLoaders: 3,
 							modules: {
 								getLocalIdent: getCSSModuleLocalIdent,
@@ -112,7 +116,7 @@ module.exports={
 					},
 					{
 						loader: "less-loader",
-						options: { sourceMap: true,},
+						options: { sourceMap: true, },
 					},
 				],
 			},
@@ -120,16 +124,20 @@ module.exports={
 				test: /\.css$/,
 				use: [
 					{
-					   loader: "style-loader",
+						loader: MiniCssExtractPlugin.loader,
+						options: {
+							hmr: devmode,
+						},
 					},
 					{
 						loader: "css-loader",
-						options: {
-							modules: {
-							localIdentName: "[name]_[local]_[hash:base64:5]",
-							},
-							importLoaders: 1,
-							localsConvention: "camelCase",
+						options: {//due to use linaria,passitive the css module config 
+							// modules: {
+							// 	localIdentName: "[name]_[local]_[hash:base64:5]",
+							// },
+							// importLoaders: 1,
+							// localsConvention: "camelCase",
+							sourceMap: devmode
 						},
 					},
 					{
@@ -137,17 +145,17 @@ module.exports={
 						options: {
 							ident: "postcss",
 							plugins: function () {
-							return [
-								postcssImport,
-								postcssVars,
-								autoprefixer({
-								overrideBrowserslist: [
-									"last 3 versions",
-									"Safari >= 8",
-									"iOS >= 8",
-								],
-								}),
-							];
+								return [
+									postcssImport,
+									postcssVars,
+									autoprefixer({
+										overrideBrowserslist: [
+											"last 3 versions",
+											"Safari >= 8",
+											"iOS >= 8",
+										],
+									}),
+								];
 							},
 						},
 					},
