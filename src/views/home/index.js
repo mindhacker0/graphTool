@@ -1,5 +1,8 @@
 //主界面入口
 import { css } from 'linaria';
 import React from 'react';
-const wrapStyle = css`color:red`;
-export default ()=>(<div className={wrapStyle}>home page_route</div>)
+import MenuBar from '@/views/menuBar';
+const wrapStyle = css`width:100%;height:100vh;`;
+export default ()=>(<div className={wrapStyle}>
+    <MenuBar />
+</div>)
